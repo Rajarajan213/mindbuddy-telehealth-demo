@@ -195,7 +195,6 @@ async function loginSubmit() {
     const session = await sbGetSession();
     if (session) await syncFromSupabase(session.user.id);
 
-    showToast(`👋 Welcome back, ${AppState.user.name}!`);
     navigateTo(AppState.isAdmin ? 'dashboard' : 'home');
 
   } catch (err) {
