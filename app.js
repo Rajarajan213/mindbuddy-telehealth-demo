@@ -132,8 +132,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     showToast(AppState.highContrast ? '♿ High-contrast mode ON' : '☀️ Standard mode ON');
   });
 
-  // ---- Supabase Auth Check (silent — no login gate) ----
-  let startScreen = 'home'; // always default to home
+  // ---- Supabase Auth Check ----
+  let startScreen = 'home'; // fallback
   try {
     const session = await sbGetSession();
     if (session && session.user) {
@@ -149,10 +149,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (av) av.textContent = AppState.user.initials;
       await syncFromSupabase(session.user.id);
       startScreen = AppState.isAdmin ? 'dashboard' : 'home';
+    } else {
+      // No active session → show login
+      startScreen = 'login';
     }
-    // No session → just go to home (demo/offline mode)
   } catch (e) {
-    console.warn('Supabase not reachable. Running in offline mode.');
+    // Supabase not reachable → show login
+    console.warn('Supabase not reachable. Showing login screen.');
+    startScreen = 'login';
   }
 
   // Hash override (deep link)
