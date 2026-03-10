@@ -132,12 +132,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     showToast(AppState.highContrast ? '♿ High-contrast mode ON' : '☀️ Standard mode ON');
   });
 
-  // ---- Supabase Auth Check ----
-  let startScreen = 'home'; // default (demo mode)
+  // ---- Supabase Auth Check (silent — no login gate) ----
+  let startScreen = 'home'; // always default to home
   try {
     const session = await sbGetSession();
     if (session && session.user) {
-      // Restore session
+      // Restore session silently
       const profile = await sbGetProfile(session.user.id);
       AppState.currentUser = session.user;
       AppState.isAdmin     = profile?.role === 'admin';
@@ -147,17 +147,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       const av = document.getElementById('userAvatar');
       if (av) av.textContent = AppState.user.initials;
-
       await syncFromSupabase(session.user.id);
       startScreen = AppState.isAdmin ? 'dashboard' : 'home';
-    } else {
-      // No active session → show login
-      startScreen = 'login';
     }
+    // No session → just go to home (demo/offline mode)
   } catch (e) {
-    // Supabase not configured yet → demo mode
-    console.warn('Supabase not configured. Running in demo mode.');
-    startScreen = 'home';
+    console.warn('Supabase not reachable. Running in offline mode.');
   }
 
   // Hash override (deep link)
