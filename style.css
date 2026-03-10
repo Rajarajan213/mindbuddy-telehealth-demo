@@ -970,5 +970,76 @@ body.high-contrast .form-input { background: var(--surface); border-color: rgba(
   100% { transform: scale(1);   opacity: 1; }
 }
 
+/* ============================================================
+   Left Sidebar / Drawer
+   ============================================================ */
+
+/* Hide old bottom nav rows 2 & 3 if they still exist */
+.bottom-nav-2, .bottom-nav-3 { display: none !important; }
+
+/* Overlay backdrop */
+.sidebar-overlay {
+  display: none; position: fixed; inset: 0; z-index: 1100;
+  background: rgba(0,0,0,0.45); backdrop-filter: blur(2px);
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.sidebar-overlay.visible { display: block; opacity: 1; }
+
+/* Sidebar panel */
+.left-sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: 260px; z-index: 1200;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  box-shadow: 6px 0 30px rgba(0,0,0,0.15);
+  transform: translateX(-100%);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex; flex-direction: column;
+  overflow-y: auto; padding-bottom: 24px;
+}
+.left-sidebar.open { transform: translateX(0); }
+
+/* Sidebar header row */
+.sidebar-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--teal) 0%, var(--lavender) 100%);
+  color: white; border-radius: 0;
+}
+.sidebar-header .icon-btn { color: white; }
+
+/* Group label */
+.sidebar-group-label {
+  font-size: 10px; font-weight: 800; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--text-muted);
+  padding: 14px 16px 6px;
+}
+
+/* Sidebar item button */
+.sidebar-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 18px; width: 100%;
+  background: none; border: none; cursor: pointer;
+  font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 700;
+  color: var(--text-primary); text-align: left;
+  border-radius: 10px; margin: 2px 8px; width: calc(100% - 16px);
+  transition: background var(--anim-fast), color var(--anim-fast), transform 0.15s;
+}
+.sidebar-item:hover {
+  background: var(--surface2);
+  color: var(--teal);
+  transform: translateX(4px);
+}
+.sidebar-item.active {
+  background: rgba(78,205,196,0.12);
+  color: var(--teal);
+}
+.sidebar-icon {
+  width: 20px; height: 20px; flex-shrink: 0;
+  stroke: currentColor;
+}
+
+
 
 

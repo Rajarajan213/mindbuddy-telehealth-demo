@@ -26,6 +26,24 @@ const SCREENS = {
 let currentScreen = 'home';
 let chartInstances = {};
 
+// ---- Left Sidebar ----
+function toggleSidebar() {
+  const sidebar = document.getElementById('leftSidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const isOpen  = sidebar.classList.contains('open');
+  sidebar.classList.toggle('open', !isOpen);
+  overlay.classList.toggle('visible', !isOpen);
+}
+function closeSidebar() {
+  document.getElementById('leftSidebar')?.classList.remove('open');
+  document.getElementById('sidebarOverlay')?.classList.remove('visible');
+}
+function sidebarNav(screen) {
+  closeSidebar();
+  navigateTo(screen);
+}
+
+
 function destroyCharts() {
   Object.values(chartInstances).forEach(c => { try { c.destroy(); } catch (e) { } });
   chartInstances = {};
