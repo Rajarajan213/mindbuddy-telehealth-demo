@@ -768,3 +768,66 @@ body.high-contrast .form-input { background: var(--surface); border-color: rgba(
   transition: all var(--anim-fast);
 }
 .btn-secondary:hover { background: var(--lavender-light); }
+
+/* ============================================================
+   Phase 4 – Login Screen
+   ============================================================ */
+.login-bg {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: var(--bg); padding: 24px;
+}
+.login-card {
+  width: 100%; max-width: 420px; padding: 36px 32px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.12);
+  animation: fadeUp 0.5s ease;
+}
+.login-brand { text-align: center; margin-bottom: 28px; }
+.login-brand-icon { font-size: 52px; display: block; margin-bottom: 8px; }
+.login-brand-name {
+  font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 28px;
+  background: linear-gradient(135deg, var(--teal), var(--lavender));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+.login-tagline { font-size: 14px; color: var(--text-secondary); margin: 4px 0 0; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+.form-input {
+  padding: 12px 14px; border-radius: var(--radius-md);
+  border: 1.5px solid var(--border); background: var(--surface2);
+  font-size: 15px; color: var(--text-primary); outline: none;
+  transition: border-color var(--anim-fast), box-shadow var(--anim-fast);
+}
+.form-input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(78,205,196,0.15); }
+.password-wrap { position: relative; }
+.password-wrap .form-input { width: 100%; box-sizing: border-box; }
+.pwd-toggle {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; font-size: 18px; padding: 0;
+}
+.login-error {
+  background: #fff0f0; border: 1px solid #ffcdd2; border-radius: var(--radius-sm);
+  color: #c0392b; font-size: 13px; padding: 10px 14px; margin-top: 10px;
+}
+.login-btn { padding: 14px; font-size: 16px; font-weight: 700; }
+.btn-full { width: 100%; }
+.login-hint {
+  text-align: center; font-size: 12px; color: var(--text-muted);
+  margin: 16px 0 0; line-height: 1.6;
+}
+.login-demo-box {
+  margin-top: 20px; padding: 14px; background: var(--surface2);
+  border-radius: var(--radius-md); text-align: center;
+  font-size: 13px; color: var(--text-secondary); border: 1px dashed var(--border);
+}
+.login-demo-box a { color: var(--teal); font-weight: 600; text-decoration: none; }
+.logout-btn {
+  align-items: center; justify-content: center;
+  color: var(--text-secondary); transition: color var(--anim-fast);
+}
+.logout-btn:hover { color: var(--rose); }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+

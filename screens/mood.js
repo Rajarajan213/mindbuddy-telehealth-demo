@@ -90,10 +90,11 @@ function initMood() {
     // Log mood button
     const logBtn = document.getElementById('logMoodBtn');
     if (logBtn && !logBtn.disabled) {
-        logBtn.addEventListener('click', () => {
+            logBtn.addEventListener('click', async () => {
             if (!selectedMood) { showToast('Please select a mood first! 😊'); return; }
             const today = new Date().toISOString().split('T')[0];
-            AppState.moodLogs.push({ date: today, emoji: selectedMood.emoji, score: selectedMood.score });
+            const entry = { date: today, emoji: selectedMood.emoji, score: selectedMood.score };
+            AppState.moodLogs.push(entry);
             AppState.streak++;
             document.getElementById('streakCount').textContent = AppState.streak;
             logBtn.textContent = '✅ Mood logged!'; logBtn.disabled = true; logBtn.style.opacity = '0.6';
@@ -101,6 +102,11 @@ function initMood() {
             if (AppState.streak % 3 === 0) launchConfetti();
             updateDots();
             buildMoodChart();
+            // Persist to Supabase
+            try {
+              const session = await sbGetSession();
+              if (session) await sbSaveMoodLog(session.user.id, entry);
+            } catch (e) { /* offline / demo mode */ }
         });
     }
 

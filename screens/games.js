@@ -157,16 +157,19 @@ function spawnBubbles() {
     }, 3000 + Math.random() * 2000);
 }
 
-function endBubbleGame() {
+async function endBubbleGame() {
     clearInterval(bubbleTimer); activeGame = null;
     const panel = document.getElementById('gameOverPanel');
     const finalScoreEl = document.getElementById('finalScore');
     if (panel) { panel.classList.remove('hidden'); panel.style.display = 'flex'; }
     if (finalScoreEl) finalScoreEl.textContent = bubbleScore;
-    AppState.gameLogs.push({ game: 'bubble', score: bubbleScore, date: new Date().toLocaleDateString() });
+    const log = { game: 'bubble', score: bubbleScore, date: new Date().toLocaleDateString() };
+    AppState.gameLogs.push(log);
     if (bubbleScore > AppState.gameScores.bubble) AppState.gameScores.bubble = bubbleScore;
     showToast(`🎉 Game over! You popped ${bubbleScore} bubbles!`);
     if (bubbleScore >= 20) launchConfetti();
+    // Persist
+    try { const s = await sbGetSession(); if (s) await sbSaveGameLog(s.user.id, { game: 'bubble', score: bubbleScore, duration: 30 }); } catch (e) {}
 
     document.getElementById('playAgainBtn')?.addEventListener('click', startBubbleGame);
     document.getElementById('exitGameBtn')?.addEventListener('click', () => {
@@ -232,10 +235,13 @@ function startZenGame() {
         if (el) el.textContent = zenTime;
     }, 1000);
 
-    document.getElementById('endZenBtn')?.addEventListener('click', () => {
+    document.getElementById('endZenBtn')?.addEventListener('click', async () => {
         clearInterval(zenInterval); activeGame = null;
-        AppState.gameLogs.push({ game: 'zen', score: zenTime, date: new Date().toLocaleDateString() });
+        const log = { game: 'zen', score: zenTime, date: new Date().toLocaleDateString() };
+        AppState.gameLogs.push(log);
         showToast(`🧘 ${zenTime} seconds of calm logged!`);
+        // Persist
+        try { const s = await sbGetSession(); if (s) await sbSaveGameLog(s.user.id, { game: 'zen', score: zenTime, duration: zenTime }); } catch (e) {}
         const app = document.getElementById('app');
         app.innerHTML = renderGames(); initGames();
     });

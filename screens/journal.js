@@ -60,7 +60,7 @@ function jPickMood(btn) {
   jSelectedMood = { score: parseInt(btn.dataset.score), emoji: btn.dataset.emoji };
 }
 
-function jSaveEntry() {
+async function jSaveEntry() {
   const title = document.getElementById('jTitle').value.trim();
   const body  = document.getElementById('jBody').value.trim();
   if (!body) { showToast('✏️ Please write something first!'); return; }
@@ -73,6 +73,15 @@ function jSaveEntry() {
     moodTag: jSelectedMood || { score: 2, emoji: '😐' }
   };
   AppState.journalEntries.unshift(entry);
+
+  // Persist to Supabase
+  try {
+    const session = await sbGetSession();
+    if (session) {
+      const saved = await sbSaveJournalEntry(session.user.id, entry);
+      if (saved) entry.id = saved.id; // use DB-assigned id
+    }
+  } catch (e) { /* offline / demo mode */ }
 
   document.getElementById('jTitle').value = '';
   document.getElementById('jBody').value = '';
@@ -119,10 +128,14 @@ function jToggleEntry(id) {
   else { prev.style.display = 'block'; full.style.display = 'none'; }
 }
 
-function jDeleteEntry(id) {
+async function jDeleteEntry(id) {
   AppState.journalEntries = AppState.journalEntries.filter(e => e.id !== id);
   jRenderHistory();
   showToast('🗑 Entry deleted');
+  try {
+    const session = await sbGetSession();
+    if (session) await sbDeleteJournalEntry(id);
+  } catch (e) { /* offline / demo mode */ }
 }
 
 function jSwitchTab(tab) {

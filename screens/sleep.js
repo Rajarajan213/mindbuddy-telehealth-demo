@@ -119,7 +119,7 @@ function sleepPickStar(n) {
   if (lbl) lbl.textContent = labels[n];
 }
 
-function sleepLogNight() {
+async function sleepLogNight() {
   const bed  = document.getElementById('sleepBedtime').value;
   const wake = document.getElementById('sleepWakeTime').value;
   const dur  = sleepCalcDuration();
@@ -128,9 +128,15 @@ function sleepLogNight() {
     showToast("You've already logged today's sleep!");
     return;
   }
-  AppState.sleepLogs.push({ date: today, bedtime: bed, wakeTime: wake, quality: sleepSelectedQuality, duration: Math.round(dur * 10) / 10 });
+  const log = { date: today, bedtime: bed, wakeTime: wake, quality: sleepSelectedQuality, duration: Math.round(dur * 10) / 10 };
+  AppState.sleepLogs.push(log);
   AppState.sleepLogs.sort((a, b) => new Date(b.date) - new Date(a.date));
   showToast('🌙 Sleep logged!');
+  // Persist to Supabase
+  try {
+    const session = await sbGetSession();
+    if (session) await sbSaveSleepLog(session.user.id, log);
+  } catch (e) { /* offline / demo mode */ }
   sleepRenderStats();
   sleepRenderChart();
   sleepRenderHistory();

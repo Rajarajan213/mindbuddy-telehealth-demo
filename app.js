@@ -6,6 +6,7 @@
 
 // ---- Screen Registry ----
 const SCREENS = {
+  login:        { render: renderLogin,       init: initLogin      },
   home: { render: renderHome, init: null },
   chat: { render: renderChat, init: initChat },
   mood: { render: renderMood, init: initMood },
@@ -38,6 +39,12 @@ function navigateTo(screen) {
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.screen === screen);
   });
+
+  // Show/hide logout button
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.style.display = (screen !== 'login' && AppState.currentUser) ? 'flex' : 'none';
+  }
 
   // Render screen
   const app = document.getElementById('app');
@@ -112,7 +119,7 @@ Chart.defaults.font.family = "'Inter','Nunito',sans-serif";
 Chart.defaults.color = '#616E99';
 
 // ---- Boot ----
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // Nav click handlers
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.addEventListener('click', () => navigateTo(btn.dataset.screen));
@@ -125,12 +132,53 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast(AppState.highContrast ? '♿ High-contrast mode ON' : '☀️ Standard mode ON');
   });
 
-  // Hash routing
+  // ---- Supabase Auth Check ----
+  let startScreen = 'home'; // default (demo mode)
+  try {
+    const session = await sbGetSession();
+    if (session && session.user) {
+      // Restore session
+      const profile = await sbGetProfile(session.user.id);
+      AppState.currentUser = session.user;
+      AppState.isAdmin     = profile?.role === 'admin';
+      if (profile) {
+        AppState.user.name     = profile.name     || session.user.email.split('@')[0];
+        AppState.user.initials = profile.initials || session.user.email.slice(0, 2).toUpperCase();
+      }
+      const av = document.getElementById('userAvatar');
+      if (av) av.textContent = AppState.user.initials;
+
+      await syncFromSupabase(session.user.id);
+      startScreen = AppState.isAdmin ? 'dashboard' : 'home';
+    } else {
+      // No active session → show login
+      startScreen = 'login';
+    }
+  } catch (e) {
+    // Supabase not configured yet → demo mode
+    console.warn('Supabase not configured. Running in demo mode.');
+    startScreen = 'home';
+  }
+
+  // Hash override (deep link)
   const hash = location.hash.replace('#', '');
-  navigateTo(SCREENS[hash] ? hash : 'home');
+  navigateTo(SCREENS[hash] ? hash : startScreen);
 
   window.addEventListener('popstate', () => {
     const h = location.hash.replace('#', '');
     navigateTo(SCREENS[h] ? h : 'home');
   });
+
+  // ---- Logout handler ----
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+      try { await sbLogout(); } catch (e) { /* ignore */ }
+      AppState.currentUser = null;
+      AppState.isAdmin = false;
+      navigateTo('login');
+      showToast('👋 Signed out');
+    });
+  }
 });
+
