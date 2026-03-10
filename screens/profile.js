@@ -7,7 +7,7 @@ let profileState = {
     photo: null,
     photoURL: null,
     data: {
-        name: 'Alex Johnson', age: '', gender: '', mobile: '',
+        name: (window.AppState && AppState.user.name) ? AppState.user.name : '', age: '', gender: '', mobile: '',
         guardian: '', guardianPhone: '', condition: '', since: '',
         emergency: '',
     }

@@ -1,6 +1,6 @@
 // ---- Shared State ----
 window.AppState = {
-  user: { name: 'Alex', initials: 'AJ' },
+  user: { name: '', initials: '' },
   currentUser: null,
   isAdmin: false,
   moodLogs: [], // { date, emoji, score }

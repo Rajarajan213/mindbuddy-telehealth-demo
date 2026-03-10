@@ -18,14 +18,16 @@ window.sbLogin = async function (email, password) {
 
   if (pErr || !profile) {
     // First-time user — create a profile row
+    const newName     = data.user.email.split('@')[0];
+    const newInitials = data.user.email.slice(0, 2).toUpperCase();
     await supabase.from('profiles').insert({
       id: data.user.id,
-      name: data.user.email.split('@')[0],
-      initials: data.user.email.slice(0, 2).toUpperCase(),
+      name: newName,
+      initials: newInitials,
       role: 'patient',
       patient_status: 'active'
     });
-    return { role: 'patient', profile: null };
+    return { role: 'patient', profile: { name: newName, initials: newInitials } };
   }
 
   return { role: profile.role, profile };
