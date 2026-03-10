@@ -199,6 +199,16 @@ async function loginSubmit() {
     navigateTo(AppState.isAdmin ? 'dashboard' : 'home');
 
   } catch (err) {
+    // 🚨 Log failed login attempt immediately
+    try {
+      await supabase.from('audit_logs').insert({
+        action_type: 'FAILED_LOGIN_ATTEMPT',
+        target_user_email: email,
+        status: 'Warning',
+        details: err.message || 'Invalid credentials'
+      });
+    } catch (e) { /* offline mode */ }
+
     showLoginError(err.message || 'Sign in failed. Check your credentials.');
     btn.disabled = false;
     document.getElementById('loginBtnText').textContent = '🔐 Sign In';

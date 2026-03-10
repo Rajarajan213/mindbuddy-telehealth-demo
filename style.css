@@ -905,4 +905,70 @@ body.high-contrast .form-input { background: var(--surface); border-color: rgba(
   color: var(--text-secondary); font-size: 14px;
 }
 
+/* ============================================================
+   Security Alert Widget + Pulse Dot
+   ============================================================ */
+.security-alert-card {
+  border-left: 4px solid #e74c3c;
+  background: linear-gradient(135deg, rgba(231,76,60,0.04), var(--surface));
+}
+.security-alert-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 4px; border-bottom: 1px solid var(--border);
+}
+.security-alert-row:last-child { border-bottom: none; }
+
+/* Brute-force threat row */
+.threat-row {
+  background: rgba(231,76,60,0.07);
+  border-radius: 8px; padding: 10px 8px;
+  animation: threatPulse 1.5s ease-in-out infinite;
+}
+@keyframes threatPulse {
+  0%, 100% { background: rgba(231,76,60,0.07); }
+  50%       { background: rgba(231,76,60,0.14); }
+}
+
+/* Animated pulse dot */
+.pulse-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 4px; position: relative;
+  background: #f39c12;
+  box-shadow: 0 0 0 0 rgba(243,156,18,0.5);
+  animation: pulseRing 1.8s ease-in-out infinite;
+}
+.pulse-dot.pulse-red {
+  background: #e74c3c;
+  box-shadow: 0 0 0 0 rgba(231,76,60,0.5);
+  animation: pulseRingRed 1.2s ease-in-out infinite;
+}
+.pulse-dot.pulse-yellow {
+  background: #f39c12;
+  animation: pulseRing 1.8s ease-in-out infinite;
+}
+@keyframes pulseRing {
+  0%   { box-shadow: 0 0 0 0 rgba(243,156,18,0.5); }
+  70%  { box-shadow: 0 0 0 8px rgba(243,156,18,0); }
+  100% { box-shadow: 0 0 0 0 rgba(243,156,18,0); }
+}
+@keyframes pulseRingRed {
+  0%   { box-shadow: 0 0 0 0 rgba(231,76,60,0.6); }
+  70%  { box-shadow: 0 0 0 10px rgba(231,76,60,0); }
+  100% { box-shadow: 0 0 0 0 rgba(231,76,60,0); }
+}
+
+/* Brute force badge */
+.threat-badge {
+  display: inline-block; margin-left: 8px;
+  background: #e74c3c; color: white;
+  font-size: 10px; font-weight: 800; padding: 2px 7px;
+  border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;
+  animation: badgePop 0.5s ease;
+}
+@keyframes badgePop {
+  0%   { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+
 

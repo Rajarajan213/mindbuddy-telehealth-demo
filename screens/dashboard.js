@@ -106,6 +106,18 @@ function renderDashboard() {
       </div>
     </div>
 
+    <!-- Security Alerts Widget -->
+    <div class="card security-alert-card mb-4" id="securityAlertWidget">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="pulse-dot"></span>
+          <h3 style="margin:0;font-size:15px;color:var(--rose);">🛡️ Security Alerts</h3>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="loadSecurityAlerts()">🔄 Refresh</button>
+      </div>
+      <div id="securityAlertList"><div class="audit-loading" style="padding:12px;">⏳ Loading…</div></div>
+    </div>
+
     <!-- Dashboard Tabs -->
     <div class="dash-tabs mb-2">
       <button class="dash-tab active" id="dTab-patients" onclick="dashSwitchTab('patients')">
@@ -154,6 +166,56 @@ function dashSwitchTab(tab) {
         document.getElementById(`dTab-${t}`).classList.toggle('active', t === tab);
     });
     if (tab === 'logs') dashLoadAuditLogs();
+}
+
+/* ---- Security Alerts Widget ------------------------------------- */
+async function loadSecurityAlerts() {
+    const box = document.getElementById('securityAlertList');
+    if (!box) return;
+    box.innerHTML = '<div class="audit-loading" style="padding:12px;">⏳ Loading alerts…</div>';
+
+    try {
+        const { data: alerts } = await supabase
+            .from('audit_logs')
+            .select('*')
+            .eq('action_type', 'FAILED_LOGIN_ATTEMPT')
+            .order('created_at', { ascending: false })
+            .limit(10);
+
+        if (!alerts || !alerts.length) {
+            box.innerHTML = '<div style="padding:10px 4px;font-size:13px;color:var(--text-secondary);">✅ No failed login attempts detected.</div>';
+            return;
+        }
+
+        // Detect repeat offenders: same email 3+ times in last 5 minutes
+        const fiveMinAgo = Date.now() - 5 * 60 * 1000;
+        const recentByEmail = {};
+        alerts.forEach(a => {
+            if (new Date(a.created_at).getTime() > fiveMinAgo) {
+                recentByEmail[a.target_user_email] = (recentByEmail[a.target_user_email] || 0) + 1;
+            }
+        });
+
+        box.innerHTML = alerts.slice(0, 5).map(alert => {
+            const email = alert.target_user_email || 'Unknown';
+            const count = recentByEmail[email] || 0;
+            const isThreat = count >= 3;
+            return `<div class="security-alert-row ${isThreat ? 'threat-row' : ''}">
+              <span class="pulse-dot ${isThreat ? 'pulse-red' : 'pulse-yellow'}"></span>
+              <div style="flex:1;min-width:0;">
+                <div style="font-weight:700;font-size:13px;">Failed Login: <span style="color:var(--rose)">${email}</span>
+                  ${isThreat ? '<span class="threat-badge">⚠️ Brute Force Alert!</span>' : ''}
+                </div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${timeAgo(alert.created_at)}
+                  ${isThreat ? ` · <strong style="color:#e74c3c">${count} attempts in 5 min</strong>` : ''}
+                </div>
+              </div>
+            </div>`;
+        }).join('');
+
+    } catch (e) {
+        box.innerHTML = '<div style="padding:10px;font-size:12px;color:var(--text-muted);">⚠️ Add the <code>audit_logs</code> table in Supabase to enable alerts.</div>';
+    }
 }
 
 /* ---- Fetch + Render Audit Logs ---------------------------------- */
@@ -260,9 +322,13 @@ function initDashboard() {
                 btn.style.background = 'var(--sage)';
                 btn.disabled = true;
                 showToast(`💬 Motivational nudge sent to ${patient.name.split(' ')[0]}!`);
-                // Log nudge action
                 try { logAuditEvent({ actionType: 'Nudge Sent', targetEmail: patient.name, details: 'Motivational SMS nudge', status: 'Success' }); } catch(e) {}
             }
         });
     });
+
+    // Auto-load security alerts on dashboard open
+    loadSecurityAlerts();
+    // Auto-refresh alerts every 30s
+    window._alertRefreshInterval = setInterval(loadSecurityAlerts, 30000);
 }
