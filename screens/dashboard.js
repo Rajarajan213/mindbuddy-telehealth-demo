@@ -1,27 +1,48 @@
 /* ============================================================
    screens/dashboard.js – Clinician Dashboard
+   Tabs: Patients | Security Logs
    ============================================================ */
 
 const MOCK_PATIENTS = [
-    { id: 'P001', name: 'Priya Sharma', age: 28, condition: 'GAD', risk: 'high', score: 19, mood: '😔', initials: 'PS', color: '#FF7675' },
-    { id: 'P002', name: 'Kiran Mehta', age: 34, condition: 'MDD', risk: 'high', score: 17, mood: '😟', initials: 'KM', color: '#A29BFE' },
-    { id: 'P003', name: 'Ananya Patel', age: 22, condition: 'Adjustment Dis.', risk: 'medium', score: 11, mood: '😐', initials: 'AP', color: '#FDCB6E' },
-    { id: 'P004', name: 'Rohan Iyer', age: 45, condition: 'Bipolar II', risk: 'medium', score: 9, mood: '🙂', initials: 'RI', color: '#74B9A0' },
-    { id: 'P005', name: 'Meera Nair', age: 31, condition: 'PTSD', risk: 'high', score: 21, mood: '😔', initials: 'MN', color: '#E17055' },
-    { id: 'P006', name: 'Arjun Reddy', age: 19, condition: 'Social Anxiety', risk: 'low', score: 5, mood: '🙂', initials: 'AR', color: '#55A3FF' },
-    { id: 'P007', name: 'Lakshmi Varma', age: 52, condition: 'MDD', risk: 'medium', score: 12, mood: '😟', initials: 'LV', color: '#A29BFE' },
-    { id: 'P008', name: 'Vikram Singh', age: 38, condition: 'GAD', risk: 'low', score: 3, mood: '😊', initials: 'VS', color: '#4ECDC4' },
+    { id: 'P001', name: 'Priya Sharma',   age: 28, condition: 'GAD',             risk: 'high',   score: 19, mood: '😔', initials: 'PS', color: '#FF7675' },
+    { id: 'P002', name: 'Kiran Mehta',    age: 34, condition: 'MDD',             risk: 'high',   score: 17, mood: '😟', initials: 'KM', color: '#A29BFE' },
+    { id: 'P003', name: 'Ananya Patel',   age: 22, condition: 'Adjustment Dis.', risk: 'medium', score: 11, mood: '😐', initials: 'AP', color: '#FDCB6E' },
+    { id: 'P004', name: 'Rohan Iyer',     age: 45, condition: 'Bipolar II',      risk: 'medium', score: 9,  mood: '🙂', initials: 'RI', color: '#74B9A0' },
+    { id: 'P005', name: 'Meera Nair',     age: 31, condition: 'PTSD',            risk: 'high',   score: 21, mood: '😔', initials: 'MN', color: '#E17055' },
+    { id: 'P006', name: 'Arjun Reddy',    age: 19, condition: 'Social Anxiety',  risk: 'low',    score: 5,  mood: '🙂', initials: 'AR', color: '#55A3FF' },
+    { id: 'P007', name: 'Lakshmi Varma', age: 52, condition: 'MDD',             risk: 'medium', score: 12, mood: '😟', initials: 'LV', color: '#A29BFE' },
+    { id: 'P008', name: 'Vikram Singh',   age: 38, condition: 'GAD',             risk: 'low',    score: 3,  mood: '😊', initials: 'VS', color: '#4ECDC4' },
 ];
 
 const RISK_LABELS = { low: 'Low Risk', medium: 'Moderate Risk', high: 'High Risk' };
+function getRiskClass(r) { return { low: 'risk-low', medium: 'risk-medium', high: 'risk-high' }[r]; }
 
-function getRiskClass(risk) {
-    return { low: 'risk-low', medium: 'risk-medium', high: 'risk-high' }[risk];
+/* ---- Relative Time Helper ---------------------------------------- */
+function timeAgo(isoString) {
+    const diff = Date.now() - new Date(isoString).getTime();
+    const mins  = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days  = Math.floor(diff / 86400000);
+    if (mins < 1)    return 'just now';
+    if (mins < 60)   return `${mins} min${mins > 1 ? 's' : ''} ago`;
+    if (hours < 24)  return `${hours} hr${hours > 1 ? 's' : ''} ago`;
+    return `${days} day${days > 1 ? 's' : ''} ago`;
 }
 
+/* ---- Audit Log Row Colour ---------------------------------------- */
+function auditBadge(actionType) {
+    const t = actionType?.toLowerCase() || '';
+    if (t.includes('deactivat') || t.includes('delete') || t.includes('removed'))
+        return { cls: 'audit-red',    icon: '🔴' };
+    if (t.includes('password') || t.includes('reset') || t.includes('update'))
+        return { cls: 'audit-yellow', icon: '🟡' };
+    return { cls: 'audit-blue', icon: '🔵' };
+}
+
+/* ---- Render ------------------------------------------------------ */
 function renderDashboard() {
-    const highRisk = MOCK_PATIENTS.filter(p => p.risk === 'high').length;
-    const avgScore = Math.round(MOCK_PATIENTS.reduce((s, p) => s + p.score, 0) / MOCK_PATIENTS.length);
+    const highRisk   = MOCK_PATIENTS.filter(p => p.risk === 'high').length;
+    const avgScore   = Math.round(MOCK_PATIENTS.reduce((s, p) => s + p.score, 0) / MOCK_PATIENTS.length);
     const totalActive = MOCK_PATIENTS.length;
 
     const patientHTML = MOCK_PATIENTS.map(p => `
@@ -35,11 +56,11 @@ function renderDashboard() {
         <span class="risk-pill ${getRiskClass(p.risk)}">${RISK_LABELS[p.risk]}</span>
         ${p.risk === 'high' ? `<button class="nudge-btn" data-pid="${p.id}">Nudge 💬</button>` : ''}
       </div>
-    </div>`
-    ).join('');
+    </div>`).join('');
 
     return `
   <div class="screen">
+    <!-- Header -->
     <div class="hero-gradient mb-4" style="background:linear-gradient(135deg,#6c5ce7 0%,var(--teal) 100%);">
       <h1>🏥 Clinician Dashboard</h1>
       <p>Population-level mental health analytics</p>
@@ -85,13 +106,107 @@ function renderDashboard() {
       </div>
     </div>
 
-    <!-- Patient List -->
-    <h2 class="section-title">Patient Overview</h2>
-    <p class="section-sub">Sorted by risk level — high-risk patients flagged in red</p>
-    <div class="patient-list" id="patientList">${patientHTML}</div>
+    <!-- Dashboard Tabs -->
+    <div class="dash-tabs mb-2">
+      <button class="dash-tab active" id="dTab-patients" onclick="dashSwitchTab('patients')">
+        👥 Patients
+      </button>
+      <button class="dash-tab" id="dTab-logs" onclick="dashSwitchTab('logs')">
+        🔒 Security Logs
+      </button>
+    </div>
+
+    <!-- Tab: Patients -->
+    <div id="dPanel-patients">
+      <p class="section-sub">Sorted by risk level — high-risk patients flagged in red</p>
+      <div class="patient-list" id="patientList">${patientHTML}</div>
+    </div>
+
+    <!-- Tab: Security Logs -->
+    <div id="dPanel-logs" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <p class="section-sub" style="margin:0">All admin actions logged in real-time</p>
+        <button class="btn btn-secondary btn-sm" onclick="dashLoadAuditLogs()">🔄 Refresh</button>
+      </div>
+
+      <!-- Legend -->
+      <div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+        <span class="audit-legend audit-blue">🔵 Information</span>
+        <span class="audit-legend audit-yellow">🟡 Password / Update</span>
+        <span class="audit-legend audit-red">🔴 Deactivation / Delete</span>
+      </div>
+
+      <!-- Log Table -->
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div id="auditLogTable" style="min-height:120px;">
+          <div class="audit-loading">⏳ Loading security logs…</div>
+        </div>
+      </div>
+    </div>
+
   </div>`;
 }
 
+/* ---- Tab Switch -------------------------------------------------- */
+function dashSwitchTab(tab) {
+    ['patients','logs'].forEach(t => {
+        document.getElementById(`dPanel-${t}`).style.display = t === tab ? 'block' : 'none';
+        document.getElementById(`dTab-${t}`).classList.toggle('active', t === tab);
+    });
+    if (tab === 'logs') dashLoadAuditLogs();
+}
+
+/* ---- Fetch + Render Audit Logs ---------------------------------- */
+async function dashLoadAuditLogs() {
+    const container = document.getElementById('auditLogTable');
+    if (!container) return;
+    container.innerHTML = '<div class="audit-loading">⏳ Fetching logs…</div>';
+
+    try {
+        const logs = await sbFetchAuditLogs(50);
+
+        if (!logs.length) {
+            container.innerHTML = `<div class="audit-loading">
+              <div style="font-size:32px;margin-bottom:8px;">📋</div>
+              <p>No audit events recorded yet.</p>
+              <p style="font-size:12px;margin-top:4px;">Events are logged automatically when actions occur.</p>
+            </div>`;
+            return;
+        }
+
+        container.innerHTML = `
+        <table class="audit-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Action</th>
+              <th>Target</th>
+              <th>Status</th>
+              <th>When</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${logs.map(log => {
+                const badge = auditBadge(log.action_type);
+                const statusCls = log.status === 'Success' ? 'audit-status-ok' : 'audit-status-err';
+                return `<tr class="audit-row ${badge.cls}">
+                  <td><span class="audit-type-icon">${badge.icon}</span></td>
+                  <td class="audit-action">${log.action_type || '—'}</td>
+                  <td class="audit-target">${log.target_user_email || '—'}</td>
+                  <td><span class="audit-status ${statusCls}">${log.status || '—'}</span></td>
+                  <td class="audit-time">${timeAgo(log.created_at)}</td>
+                </tr>`;
+            }).join('')}
+          </tbody>
+        </table>`;
+    } catch (e) {
+        container.innerHTML = `<div class="audit-loading" style="color:var(--rose)">
+          ⚠️ Could not load logs. Check your Supabase <code>audit_logs</code> table.
+        </div>`;
+    }
+}
+
+/* ---- Init -------------------------------------------------------- */
 function initDashboard() {
     // Bar chart – mood distribution
     const moodCanvas = document.getElementById('moodDistChart');
@@ -100,12 +215,9 @@ function initDashboard() {
             type: 'bar',
             data: {
                 labels: ['😔 Awful', '😟 Poor', '😐 Okay', '🙂 Good', '😊 Great'],
-                datasets: [{
-                    data: [3, 5, 8, 12, 6],
+                datasets: [{ data: [3, 5, 8, 12, 6],
                     backgroundColor: ['#FF7675', '#FDCB6E', '#B2BEC3', '#74B9A0', '#4ECDC4'],
-                    borderRadius: 8,
-                    borderSkipped: false,
-                }]
+                    borderRadius: 8, borderSkipped: false }]
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
@@ -128,19 +240,13 @@ function initDashboard() {
             type: 'doughnut',
             data: {
                 labels: ['Low', 'Moderate', 'High'],
-                datasets: [{
-                    data: [low, med, high],
+                datasets: [{ data: [low, med, high],
                     backgroundColor: ['#74B9A0', '#FDCB6E', '#FF7675'],
-                    borderWidth: 0,
-                    hoverOffset: 6,
-                }]
+                    borderWidth: 0, hoverOffset: 6 }]
             },
             options: {
-                responsive: true, maintainAspectRatio: false,
-                cutout: '65%',
-                plugins: {
-                    legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } }
-                }
+                responsive: true, maintainAspectRatio: false, cutout: '65%',
+                plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } } }
             }
         });
     }
@@ -148,13 +254,14 @@ function initDashboard() {
     // Nudge buttons
     document.querySelectorAll('.nudge-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const pid = btn.dataset.pid;
-            const patient = MOCK_PATIENTS.find(p => p.id === pid);
+            const patient = MOCK_PATIENTS.find(p => p.id === btn.dataset.pid);
             if (patient) {
                 btn.textContent = '✅ Sent!';
                 btn.style.background = 'var(--sage)';
                 btn.disabled = true;
                 showToast(`💬 Motivational nudge sent to ${patient.name.split(' ')[0]}!`);
+                // Log nudge action
+                try { logAuditEvent({ actionType: 'Nudge Sent', targetEmail: patient.name, details: 'Motivational SMS nudge', status: 'Success' }); } catch(e) {}
             }
         });
     });

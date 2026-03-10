@@ -219,6 +219,32 @@ window.sbSetPatientStatus = async function (id, status) {
   await supabase.from('profiles').update({ patient_status: status }).eq('id', id);
 };
 
+// ---- AUDIT LOGS -------------------------------------------------
+
+window.logAuditEvent = async function ({ actionType, targetEmail = null, details = null, status = 'Success' }) {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    await supabase.from('audit_logs').insert({
+      admin_id: user ? user.id : null,
+      action_type: actionType,
+      target_user_email: targetEmail,
+      details,
+      status
+    });
+  } catch (e) {
+    console.warn('Audit log failed (offline/demo mode):', e.message);
+  }
+};
+
+window.sbFetchAuditLogs = async function (limit = 50) {
+  const { data } = await supabase
+    .from('audit_logs')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(limit);
+  return data || [];
+};
+
 // ---- SYNC: Load all user data into AppState ---------------------
 
 window.syncFromSupabase = async function (userId) {

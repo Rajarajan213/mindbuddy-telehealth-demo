@@ -845,3 +845,64 @@ body.high-contrast .form-input { background: var(--surface); border-color: rgba(
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ============================================================
+   Dashboard Tabs + Audit Log Styles
+   ============================================================ */
+.dash-tabs {
+  display: flex; gap: 8px; border-bottom: 2px solid var(--border);
+  padding-bottom: 0; margin-bottom: 16px;
+}
+.dash-tab {
+  padding: 10px 20px; border: none; background: none; cursor: pointer;
+  font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px;
+  color: var(--text-secondary); border-bottom: 3px solid transparent;
+  margin-bottom: -2px; transition: all var(--anim-fast); border-radius: 8px 8px 0 0;
+}
+.dash-tab:hover { color: var(--teal); background: var(--surface2); }
+.dash-tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+
+/* Audit Table */
+.audit-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+.audit-table thead tr {
+  background: var(--surface2); border-bottom: 2px solid var(--border);
+}
+.audit-table th {
+  padding: 10px 14px; text-align: left; font-weight: 700;
+  color: var(--text-secondary); font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.audit-row td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.audit-row:last-child td { border-bottom: none; }
+.audit-row:hover { background: var(--surface2); }
+
+/* Colour coding */
+.audit-blue  { border-left: 3px solid #3498db; }
+.audit-yellow { border-left: 3px solid #f39c12; }
+.audit-red   { border-left: 3px solid #e74c3c; }
+
+.audit-type-icon { font-size: 14px; }
+.audit-action { font-weight: 600; color: var(--text-primary); }
+.audit-target { color: var(--text-secondary); font-size: 12px; }
+.audit-time   { color: var(--text-muted); font-size: 12px; white-space: nowrap; }
+.audit-status { padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.audit-status-ok  { background: #e8f8f0; color: #27ae60; }
+.audit-status-err { background: #fdecea; color: #e74c3c; }
+
+/* Legend chips */
+.audit-legend {
+  font-size: 12px; font-weight: 600; padding: 4px 10px;
+  border-radius: 20px; display: inline-flex; align-items: center; gap: 4px;
+}
+.audit-legend.audit-blue   { background: #ebf5fb; color: #2980b9; }
+.audit-legend.audit-yellow { background: #fef9e7; color: #d68910; }
+.audit-legend.audit-red    { background: #fdecea; color: #c0392b; }
+
+/* Loading / empty state */
+.audit-loading {
+  text-align: center; padding: 40px 20px;
+  color: var(--text-secondary); font-size: 14px;
+}
+
+

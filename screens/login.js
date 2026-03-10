@@ -234,6 +234,16 @@ async function sendResetEmail() {
 
     if (error) throw error;
 
+    // Log the audit event
+    try {
+      await logAuditEvent({
+        actionType: 'Password Reset Initiated',
+        targetEmail: email,
+        details: 'Reset link sent via Supabase Auth',
+        status: 'Success'
+      });
+    } catch (e) { /* admin might not be logged in */ }
+
     // Success
     msgEl.textContent = '✅ Reset link sent! Check your inbox (and spam folder).';
     msgEl.style.background = '#f0fff4'; msgEl.style.color = '#27ae60';
