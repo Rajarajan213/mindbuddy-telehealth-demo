@@ -786,7 +786,9 @@ body.high-contrast .form-input { background: var(--surface); border-color: rgba(
 .login-brand-name {
   font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 28px;
   background: linear-gradient(135deg, var(--teal), var(--lavender));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   margin: 0;
 }
 .login-tagline { font-size: 14px; color: var(--text-secondary); margin: 4px 0 0; }
@@ -823,9 +825,15 @@ body.high-contrast .form-input { background: var(--surface); border-color: rgba(
 .login-demo-box a { color: var(--teal); font-weight: 600; text-decoration: none; }
 .logout-btn {
   align-items: center; justify-content: center;
-  color: var(--text-secondary); transition: color var(--anim-fast);
+  background-color: #ef4444 !important;
+  color: white !important;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-weight: 600;
+  font-size: 13px;
+  transition: background var(--anim-fast);
 }
-.logout-btn:hover { color: var(--rose); }
+.logout-btn:hover { background-color: #dc2626 !important; }
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }

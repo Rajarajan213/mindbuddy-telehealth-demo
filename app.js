@@ -147,8 +147,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       const av = document.getElementById('userAvatar');
       if (av) av.textContent = AppState.user.initials;
+
+      // Auto-load all patient data from Supabase
       await syncFromSupabase(session.user.id);
-      startScreen = AppState.isAdmin ? 'dashboard' : 'home';
+
+      if (AppState.isAdmin) {
+        startScreen = 'dashboard'; // Admin → Clinician Master Table
+      } else {
+        startScreen = 'home'; // Patient → Personal Home with their data
+      }
     } else {
       // No active session → show login
       startScreen = 'login';
@@ -158,6 +165,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.warn('Supabase not reachable. Showing login screen.');
     startScreen = 'login';
   }
+
+  // ---- Security Guard: onAuthStateChange ----
+  // If user signs out from ANY tab, immediately redirect to login everywhere
+  try {
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        AppState.currentUser = null;
+        AppState.isAdmin = false;
+        navigateTo('login');
+        showToast('🔒 Session ended. Please sign in again.');
+      }
+      if (event === 'SIGNED_IN' && session) {
+        // Show logout button when signed in
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) logoutBtn.style.display = 'flex';
+      }
+    });
+  } catch (e) { /* supabase not configured */ }
 
   // Hash override (deep link)
   const hash = location.hash.replace('#', '');
