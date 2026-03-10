@@ -404,8 +404,18 @@ body.high-contrast .glass-card { background: rgba(30,40,65,0.85); border-color: 
   background: rgba(248,249,255,0.92);
 }
 body.high-contrast .bottom-nav-2 { background: rgba(18,22,40,0.95); }
-:root { --total-nav-h: calc(var(--nav-h) * 2); }
-.main-content { padding-bottom: calc(var(--nav-h) * 2 + 16px); }
+
+/* ---- Third Nav Row (Phase 3) ---- */
+.bottom-nav-3 {
+  bottom: calc(var(--nav-h) * 2);
+  border-top: none;
+  border-bottom: 1px solid var(--border);
+  background: rgba(240,244,255,0.95);
+}
+body.high-contrast .bottom-nav-3 { background: rgba(14,18,32,0.98); }
+
+/* Adjust main content for 3 nav rows */
+.main-content { padding-bottom: calc(var(--nav-h) * 3 + 16px); }
 
 /* ---- Form Elements ---- */
 .form-group { display: flex; flex-direction: column; gap: 6px; }
@@ -519,3 +529,242 @@ body.high-contrast .form-input { background: var(--surface); border-color: rgba(
 .game-title { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 17px; margin-bottom: 6px; }
 .game-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.55; }
 .game-meta { font-size: 11px; color: var(--text-muted); margin-top: 8px; font-weight: 600; }
+
+/* ============================================================
+   PHASE 3 – JOURNAL / DIARY
+   ============================================================ */
+.screen-container { padding: 20px; animation: fadeUp 0.35s ease both; }
+.screen-header { margin-bottom: 18px; }
+.screen-title { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 24px; color: var(--text-primary); }
+.screen-subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+
+.tab-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+.tab-btn {
+  flex: 1; padding: 10px 16px; border-radius: var(--radius-xl);
+  font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 13px;
+  border: 1.5px solid var(--border); background: var(--surface2);
+  color: var(--text-secondary); transition: all var(--anim-fast);
+}
+.tab-btn.active {
+  background: linear-gradient(135deg, var(--teal), var(--lavender));
+  color: #fff; border-color: transparent;
+  box-shadow: 0 4px 14px rgba(78,205,196,0.3);
+}
+
+.journal-card { display: flex; flex-direction: column; gap: 14px; margin-bottom: 16px; }
+.journal-panel { display: block; }
+.journal-title-input {
+  width: 100%; padding: 12px 14px; border-radius: var(--radius-md);
+  border: 1.5px solid var(--border); background: var(--surface2);
+  font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 16px;
+  color: var(--text-primary); transition: border-color var(--anim-fast), box-shadow var(--anim-fast);
+}
+.journal-title-input:focus { outline: none; border-color: var(--lavender); box-shadow: 0 0 0 3px rgba(162,155,254,0.15); }
+.journal-mood-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.journal-mood-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
+.journal-mood-picker { display: flex; gap: 8px; }
+.mood-pill {
+  font-size: 22px; padding: 6px 10px; border-radius: var(--radius-md);
+  border: 2px solid transparent; background: var(--surface2);
+  cursor: pointer; transition: all var(--anim-fast);
+}
+.mood-pill:hover { transform: scale(1.15); }
+.mood-pill.selected { border-color: var(--lavender); background: var(--lavender-light); transform: scale(1.2); }
+
+.journal-textarea {
+  width: 100%; padding: 14px; border-radius: var(--radius-md);
+  border: 1.5px solid var(--border); background: var(--surface2);
+  font-size: 14px; color: var(--text-primary); line-height: 1.7;
+  resize: vertical; transition: border-color var(--anim-fast), box-shadow var(--anim-fast);
+}
+.journal-textarea:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(78,205,196,0.15); }
+.journal-word-count { font-size: 11px; color: var(--text-muted); text-align: right; }
+
+.journal-entry-card {
+  margin-bottom: 12px; cursor: pointer;
+  transition: box-shadow var(--anim-fast), transform var(--anim-fast);
+}
+.journal-entry-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.journal-entry-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 8px; }
+.entry-mood-badge { font-size: 20px; }
+.entry-title { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 15px; color: var(--text-primary); }
+.entry-date { font-size: 11px; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
+.entry-preview { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+.entry-body-text { font-size: 14px; color: var(--text-primary); line-height: 1.7; margin-bottom: 12px; }
+.btn-danger-sm {
+  background: rgba(255,118,117,0.12); color: var(--rose);
+  border: 1px solid rgba(255,118,117,0.3); border-radius: var(--radius-xl);
+  padding: 6px 14px; font-size: 12px; font-weight: 700; font-family: 'Nunito', sans-serif;
+  cursor: pointer; transition: all var(--anim-fast);
+}
+.btn-danger-sm:hover { background: var(--rose); color: #fff; }
+
+.empty-state { text-align: center; padding: 40px 20px; }
+.empty-icon { font-size: 52px; margin-bottom: 12px; }
+.empty-state p { font-size: 14px; color: var(--text-secondary); }
+
+/* ============================================================
+   PHASE 3 – SLEEP TRACKER
+   ============================================================ */
+.sleep-log-card { margin-bottom: 16px; }
+.card-subheading { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 16px; color: var(--text-primary); margin-bottom: 14px; }
+
+.sleep-time-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.sleep-time-field { display: flex; flex-direction: column; gap: 6px; }
+.sleep-label { font-size: 13px; font-weight: 700; color: var(--text-secondary); }
+.time-input {
+  padding: 12px 14px; border-radius: var(--radius-md);
+  border: 1.5px solid var(--border); background: var(--surface2);
+  font-size: 18px; font-weight: 700; color: var(--text-primary); width: 100%;
+  font-family: 'Nunito', sans-serif;
+  transition: border-color var(--anim-fast);
+}
+.time-input:focus { outline: none; border-color: var(--teal); }
+
+.sleep-duration-badge {
+  text-align: center; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 36px;
+  padding: 14px; border-radius: var(--radius-md); margin-bottom: 14px;
+  transition: background var(--anim-med), color var(--anim-med);
+}
+.dur-green { background: rgba(116,185,160,0.15); color: var(--sage); }
+.dur-yellow { background: rgba(253,203,110,0.15); color: #c9841a; }
+.dur-red { background: rgba(255,118,117,0.12); color: var(--rose); }
+
+.sleep-quality-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.star-rating { display: flex; gap: 6px; }
+.star-btn {
+  font-size: 26px; color: var(--border); line-height: 1; padding: 0;
+  transition: color var(--anim-fast), transform var(--anim-fast);
+}
+.star-btn.filled { color: var(--amber); }
+.star-btn:hover { transform: scale(1.2); }
+.sleep-quality-label { font-size: 13px; font-weight: 700; color: var(--text-secondary); }
+
+.stats-row { display: flex; gap: 10px; margin-bottom: 16px; }
+.chart-card { margin-bottom: 16px; }
+
+.sleep-history-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.sleep-history-row:last-child { border-bottom: none; }
+.sleep-row-left { display: flex; flex-direction: column; gap: 3px; }
+.sleep-row-date { font-weight: 700; font-size: 14px; }
+.sleep-row-times { font-size: 12px; color: var(--text-secondary); }
+.sleep-row-right { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+.sleep-dur-badge { padding: 3px 10px; border-radius: var(--radius-xl); font-size: 12px; font-weight: 700; }
+.badge-green { background: rgba(116,185,160,0.15); color: var(--sage); }
+.badge-yellow { background: rgba(253,203,110,0.15); color: #c9841a; }
+.badge-red { background: rgba(255,118,117,0.12); color: var(--rose); }
+.sleep-row-stars { font-size: 12px; color: var(--amber); }
+
+.section-heading {
+  font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 16px;
+  color: var(--text-primary); margin-bottom: 12px;
+}
+
+/* ============================================================
+   PHASE 3 – BREATHING EXERCISES
+   ============================================================ */
+.breathing-info-card { margin-bottom: 20px; }
+.breathing-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.65; text-align: center; }
+
+.breathing-circle-wrap {
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px 0 28px;
+}
+.breathing-circle {
+  width: 190px; height: 190px; border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, var(--lavender), var(--teal));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 20px rgba(162,155,254,0.12), 0 0 0 38px rgba(78,205,196,0.07);
+  transition: transform 1s ease, background 1s ease;
+  cursor: default;
+}
+.breath-inner { text-align: center; color: #fff; }
+.breath-phase { display: block; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 22px; letter-spacing: -0.5px; }
+.breath-timer { display: block; font-size: 38px; font-weight: 900; margin-top: 2px; font-family: 'Nunito', sans-serif; }
+
+.breathing-controls { display: flex; gap: 14px; justify-content: center; margin-bottom: 16px; }
+.breathing-start-btn { padding: 14px 40px; font-size: 16px; border-radius: var(--radius-xl); }
+.breathing-cycles { text-align: center; font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
+
+.breathing-tips { display: flex; flex-direction: column; gap: 10px; }
+.tip-card {
+  display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+  background: var(--surface); border-radius: var(--radius-md);
+  border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+}
+.tip-icon { font-size: 22px; flex-shrink: 0; }
+.tip-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.55; }
+
+/* ============================================================
+   PHASE 3 – CRISIS CONTACTS
+   ============================================================ */
+.crisis-banner {
+  display: flex; align-items: center; gap: 14px;
+  background: linear-gradient(135deg, rgba(162,155,254,0.18), rgba(78,205,196,0.14));
+  border: 1.5px solid rgba(162,155,254,0.3);
+  border-radius: var(--radius-lg); padding: 20px;
+  margin-bottom: 20px;
+}
+.crisis-banner-icon { font-size: 42px; flex-shrink: 0; }
+.crisis-banner-title { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 20px; color: var(--text-primary); }
+.crisis-banner-sub { font-size: 13px; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; }
+
+.crisis-grid { display: flex; flex-direction: column; gap: 10px; }
+.crisis-card {
+  display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+  border-radius: var(--radius-md); border: 1.5px solid var(--border);
+  background: var(--surface); text-decoration: none; color: inherit;
+  transition: all var(--anim-fast); box-shadow: var(--shadow-sm);
+}
+.crisis-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--teal); }
+.crisis-card-icon {
+  width: 44px; height: 44px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.crisis-card-info { flex: 1; }
+.crisis-card-name { font-weight: 700; font-size: 14px; color: var(--text-primary); }
+.crisis-card-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.crisis-card-number { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 14px; white-space: nowrap; }
+
+.safety-plan-intro { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.5; }
+.safety-item-card { margin-bottom: 10px; cursor: pointer; padding: 14px 16px; }
+.safety-item-header { display: flex; align-items: center; justify-content: space-between; font-size: 15px; }
+.safety-toggle-icon { color: var(--text-muted); font-size: 12px; }
+.safety-item-body { padding-top: 12px; }
+.safety-textarea {
+  width: 100%; padding: 12px; border-radius: var(--radius-md);
+  border: 1.5px solid var(--border); background: var(--surface2);
+  font-size: 13px; color: var(--text-primary); resize: vertical; min-height: 80px;
+  line-height: 1.6; font-family: 'Inter', sans-serif;
+}
+.safety-textarea:focus { outline: none; border-color: var(--lavender); }
+
+.crisis-reminder {
+  background: rgba(253,203,110,0.1); border: 1.5px solid rgba(253,203,110,0.4);
+  font-size: 13px; color: var(--text-primary); line-height: 1.65; margin-bottom: 16px;
+}
+
+/* ---- Shared Phase 3 Button ---- */
+.btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 24px; border-radius: var(--radius-xl); font-weight: 700;
+  font-family: 'Nunito', sans-serif; font-size: 15px;
+  background: linear-gradient(135deg, var(--teal), var(--lavender));
+  color: #fff; box-shadow: 0 6px 20px rgba(78,205,196,0.36);
+  cursor: pointer; border: none;
+  transition: all var(--anim-fast);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(78,205,196,0.45); }
+.btn-primary:active { transform: translateY(0); }
+.btn-secondary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 24px; border-radius: var(--radius-xl); font-weight: 700;
+  font-family: 'Nunito', sans-serif; font-size: 15px;
+  background: var(--surface2); color: var(--text-primary);
+  border: 1.5px solid var(--border); cursor: pointer;
+  transition: all var(--anim-fast);
+}
+.btn-secondary:hover { background: var(--lavender-light); }

@@ -2,38 +2,7 @@
    app.js – SPA Router + Shared State
    ============================================================ */
 
-// ---- Shared State ----
-window.AppState = {
-  user: { name: 'Alex', initials: 'AJ' },
-  moodLogs: [], // { date, emoji, score }
-  streak: 0,
-  phqResults: [],
-  chatHistory: [],
-  highContrast: false,
-};
-
-// Seed 12 days of mock mood data
-(function seedMoods() {
-  const emojis = ['😔', '😟', '😐', '🙂', '😊'];
-  const today = new Date();
-  for (let i = 12; i >= 1; i--) {
-    const d = new Date(today);
-    d.setDate(today.getDate() - i);
-    const score = Math.floor(Math.random() * 5);
-    AppState.moodLogs.push({
-      date: d.toISOString().split('T')[0],
-      emoji: emojis[score],
-      score,
-    });
-  }
-  // Streak = consecutive recent days
-  let streak = 0;
-  for (let i = AppState.moodLogs.length - 1; i >= 0; i--) {
-    streak++;
-    if (Math.random() > 0.92) break;
-  }
-  AppState.streak = Math.min(streak, 7);
-})();
+// Shared state is now handled by state.js
 
 // ---- Screen Registry ----
 const SCREENS = {
@@ -42,10 +11,14 @@ const SCREENS = {
   mood: { render: renderMood, init: initMood },
   phq9: { render: renderPHQ9, init: initPHQ9 },
   dashboard: { render: renderDashboard, init: initDashboard },
-  profile: { render: renderProfile, init: initProfile },
-  medications: { render: renderMedications, init: initMedications },
-  reminders: { render: renderReminders, init: initReminders },
-  games: { render: renderGames, init: initGames },
+  profile:      { render: renderProfile,    init: initProfile    },
+  medications:  { render: renderMedications, init: initMedications },
+  reminders:    { render: renderReminders,   init: initReminders  },
+  games:        { render: renderGames,       init: initGames      },
+  journal:      { render: renderJournal,     init: initJournal    },
+  sleep:        { render: renderSleep,       init: initSleep      },
+  breathing:    { render: renderBreathing,   init: initBreathing  },
+  crisis:       { render: renderCrisis,      init: initCrisis     },
 };
 
 let currentScreen = 'home';
