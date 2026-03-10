@@ -823,6 +823,12 @@ body.high-contrast .form-input { background: var(--surface); border-color: rgba(
   font-size: 13px; color: var(--text-secondary); border: 1px dashed var(--border);
 }
 .login-demo-box a { color: var(--teal); font-weight: 600; text-decoration: none; }
+.forgot-link {
+  color: var(--text-secondary); font-size: 13px; font-weight: 600;
+  text-decoration: underline; text-underline-offset: 3px;
+  transition: color var(--anim-fast);
+}
+.forgot-link:hover { color: var(--teal); }
 .logout-btn {
   align-items: center; justify-content: center;
   background-color: #ef4444 !important;

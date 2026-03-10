@@ -6,7 +6,8 @@
 
 // ---- Screen Registry ----
 const SCREENS = {
-  login:        { render: renderLogin,       init: initLogin      },
+  login:          { render: renderLogin,         init: initLogin         },
+  'reset-password': { render: renderResetPassword, init: initResetPassword },
   home: { render: renderHome, init: null },
   chat: { render: renderChat, init: initChat },
   mood: { render: renderMood, init: initMood },
@@ -185,8 +186,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch (e) { /* supabase not configured */ }
 
   // Hash override (deep link)
+  // Special case: #reset-password means user clicked email reset link
   const hash = location.hash.replace('#', '');
-  navigateTo(SCREENS[hash] ? hash : startScreen);
+  if (hash === 'reset-password') {
+    // Supabase session is automatically set from the URL token
+    navigateTo('reset-password');
+  } else {
+    navigateTo(SCREENS[hash] ? hash : startScreen);
+  }
 
   window.addEventListener('popstate', () => {
     const h = location.hash.replace('#', '');
